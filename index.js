@@ -63,6 +63,8 @@ app.get('/search/:phrase', function (req, res) {
   var videos = [];
   getAllSubscriptions(req.params.phrase, undefined, { videos: videos }, function() {
     console.log(videos.length);
+    videos.sort(function(a, b){return b.published.localeCompare(a.published);})
+    videos = videos.slice(0, config.app.videosinresponse);
     res.send(JSON.stringify(videos));
   });
 

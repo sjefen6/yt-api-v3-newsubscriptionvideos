@@ -1,9 +1,10 @@
 var config = {}
 
 config.youtube = {};
-config.web = {};
+config.app = {};
 
 config.youtube.apikey =  'YOUR API KEY';
-config.web.port = 8080;
+config.app.videosinresponse = 10;
+config.app.port = 3000;
 
 module.exports = config;
