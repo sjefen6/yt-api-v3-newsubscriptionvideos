@@ -12,22 +12,25 @@ var parseString = new xml2js.Parser({
 }).parseString;
 var app = express();
 
-function getAllSubscriptions(channel, pagetoken, context, cb) {
+function getAllSubscriptions(channel, cb, pagetoken, context) {
   youtube.subscriptions.list({
-    "part": "snippet",
-    "channelId": channel,
-    "maxResults": "50",
-    "pageToken": pagetoken
+    part: "snippet",
+    channelId: channel,
+    maxResults: 50,
+    pageToken: pagetoken
   }, function (err, data) {
-    if (context.n === undefined) {
-      context.i = 0;
-      context.n = data.items.length;
+    if (context === undefined) {
+      context = {
+        videos: [],
+        total: data.items.length,
+        done: 0
+      };
     } else {
-      context.n += data.items.length;
+      context.total += data.items.length;
     }
 
     if(data.nextPageToken !== undefined){
-      getAllSubscriptions(channel, data.nextPageToken, context, cb);
+      getAllSubscriptions(channel, cb, data.nextPageToken, context);
     }
 
     data.items.forEach(function(entry) {
@@ -39,9 +42,9 @@ function getAllSubscriptions(channel, pagetoken, context, cb) {
             });
           }
 
-          context.i++;
-          if (context.i === context.n) {
-            cb();
+          context.done++;
+          if (context.done === context.total) {
+            cb(context.videos);
           }
         });
     });
@@ -60,8 +63,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/search/:phrase', function (req, res) {
-  var videos = [];
-  getAllSubscriptions(req.params.phrase, undefined, { videos: videos }, function() {
+  getAllSubscriptions(req.params.phrase, function(videos) {
     console.log(videos.length);
     videos.sort(function(a, b){return b.published.localeCompare(a.published);})
     videos = videos.slice(0, config.app.videosinresponse);
