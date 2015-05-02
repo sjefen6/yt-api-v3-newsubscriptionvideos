@@ -1,0 +1,20 @@
+{
+  "name": "yt-api-v3-newsubscriptionvideos",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Reimplementation of newsubscriptionvideos in yt-api-v3",
+  "main": "index.js",
+  "scripts": {
+    "start": "node .index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vegard Langaas <code@sjefen6.no>",
+  "license": "GPL V3",
+  "dependencies": {
+    "express": "~4.12.2",
+    "ejs": "~2.3.1",
+    "request": "~2.55.0",
+    "youtube-api": "~0.3.2",
+    "xml2js": "~0.4.8"
+  }
+}
