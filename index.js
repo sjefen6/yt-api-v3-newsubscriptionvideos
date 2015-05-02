@@ -6,36 +6,45 @@ youtube.authenticate({
   type: "key",
   key: config.youtube.apikey
 });
-var parseString = require('xml2js').parseString;
+var xml2js = require('xml2js');
+var parseString = new xml2js.Parser({
+  explicitArray: false
+}).parseString;
 var app = express();
 
-function getAllSubscriptions(channel, pagetoken) {
+function getAllSubscriptions(channel, pagetoken, context, cb) {
   youtube.subscriptions.list({
     "part": "snippet",
     "channelId": channel,
     "maxResults": "50",
     "pageToken": pagetoken
   }, function (err, data) {
-    if(typeof data.nextPageToken != 'undefined'){
-      getAllSubscriptions(channel,data.nextPageToken);
+    if (context.n === undefined) {
+      context.i = 0;
+      context.n = data.items.length;
+    } else {
+      context.n += data.items.length;
     }
 
-    var videos = [];
+    if(data.nextPageToken !== undefined){
+      getAllSubscriptions(channel, data.nextPageToken, context, cb);
+    }
 
     data.items.forEach(function(entry) {
       request("https://www.youtube.com/feeds/videos.xml?channel_id=" + entry.snippet.resourceId.channelId,
         function (error, response, body) {
           if (!error && response.statusCode == 200) {
             parseString(body, function (err, result) {
-              videos[videos.length] = result.feed.entry;
+              context.videos.push.apply(context.videos, result.feed.entry);
             });
           }
-          console.log(videos);
+
+          context.i++;
+          if (context.i === context.n) {
+            cb();
+          }
         });
     });
-
-
-    //console.log(err || data);
   });
 }
 
@@ -51,7 +60,11 @@ app.get('/', function (req, res) {
 });
 
 app.get('/search/:phrase', function (req, res) {
-  getAllSubscriptions(req.params.phrase);
+  var videos = [];
+  getAllSubscriptions(req.params.phrase, undefined, { videos: videos }, function() {
+    console.log(videos.length);
+    res.send(JSON.stringify(videos));
+  });
 
 /*  request('http://ip.goldclone.no', function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -59,7 +72,7 @@ app.get('/search/:phrase', function (req, res) {
     }
 
   })*/
-  res.send('Something');
+  //res.send('Something');
   //console.log(request("https://www.googleapis.com/youtube/v3/subscriptions?part=part=snippet&channelId=%s&key=%s",req.params.phrase,config.youtube.apikey));
 });
 
