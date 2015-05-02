@@ -67,23 +67,12 @@ app.get('/search/:phrase', function (req, res) {
     console.log(videos.length);
     videos.sort(function(a, b){return b.published.localeCompare(a.published);})
     videos = videos.slice(0, config.app.videosinresponse);
-    res.send(JSON.stringify(videos));
+
+    res.set('Content-Type', 'text/xml');
+		res.render('atom', { videos: videos });
   });
 
-/*  request('http://ip.goldclone.no', function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      console.log(body); // Show the HTML for the Google homepage.
-    }
-
-  })*/
-  //res.send('Something');
-  //console.log(request("https://www.googleapis.com/youtube/v3/subscriptions?part=part=snippet&channelId=%s&key=%s",req.params.phrase,config.youtube.apikey));
 });
-
-//
-//GET https://www.googleapis.com/youtube/v3/subscriptions?part=id%2C+snippet%2C+contentDetails&channelId=UChJRyNlaSpSBUhPLgqdSCzQ&key={YOUR_API_KEY}
-//GET https://www.googleapis.com/youtube/v3/subscriptions?part=snippet&channelId=UChJRyNlaSpSBUhPLgqdSCzQ&maxResults=50&key={YOUR_API_KEY}
-//https://www.youtube.com/feeds/videos.xml?channel_id=
 
 app.use(function(req, res) {
     res.status(404).send('Not found');
