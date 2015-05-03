@@ -5,50 +5,50 @@
   xmlns="http://www.w3.org/2005/Atom">
   <link rel="self"
     href="http://www.youtube.com/feeds/videos.xml?channel_id=UChJRyNlaSpSBUhPLgqdSCzQ"/>
-    <id>yt:channel:UChJRyNlaSpSBUhPLgqdSCzQ</id>
-    <yt:channelId>UChJRyNlaSpSBUhPLgqdSCzQ</yt:channelId>
-    <title>Vegard Langås</title>
-    <link rel="alternate" href="http://www.youtube.com/user/sjefen6"/>
+  <id>yt:channel:UChJRyNlaSpSBUhPLgqdSCzQ</id>
+  <yt:channelId>UChJRyNlaSpSBUhPLgqdSCzQ</yt:channelId>
+  <title>Vegard Langås</title>
+  <link rel="alternate" href="http://www.youtube.com/user/sjefen6"/>
+  <author>
+    <name>Vegard Langås</name>
+    <uri>http://www.youtube.com/channel/UChJRyNlaSpSBUhPLgqdSCzQ</uri>
+  </author>
+  <published>2006-05-03T16:29:55+00:00</published>
+  <updated>2015-04-10T04:49:16+00:00</updated>
+  <% for (var i = 0, len = videos.length; i < len; i++) { %>
+  <entry>
+    <id><%- videos[i].id %></id>
+    <yt:videoId><%- videos[i]['yt:videoId'] %></yt:videoId>
+    <yt:channelId><%- videos[i]['yt:channelId'] %></yt:channelId>
+    <title><%- videos[i].title %></title>
+    <link rel="<%- videos[i].link.$.rel %>" href="<%- videos[i].link.$.href %>"/>
     <author>
-      <name>Vegard Langås</name>
-      <uri>http://www.youtube.com/channel/UChJRyNlaSpSBUhPLgqdSCzQ</uri>
+      <name><%= videos[i].author.name %></name>
+      <uri><%- videos[i].author.uri %></uri>
     </author>
-    <published>2006-05-03T16:29:55+00:00</published>
-    <updated>2015-04-10T04:49:16+00:00</updated>
-    <% for (var i = 0, len = videos.length; i < len; i++) { %>
-    <entry>
-      <id><%- videos[i].id %></id>
-      <yt:videoId><%- videos[i]['yt:videoId'] %></yt:videoId>
-      <yt:channelId><%- videos[i]['yt:channelId'] %></yt:channelId>
-      <title><%- videos[i].title %></title>
-      <link rel="<%- videos[i].link.$.rel %>" href="<%- videos[i].link.$.href %>"/>
-      <author>
-        <name><%- videos[i].author.name %></name>
-        <uri><%- videos[i].author.uri %></uri>
-      </author>
-      <published><%- videos[i].published %></published>
-      <updated><%- videos[i].updated %></updated>
-      <media:group>
-        <media:title><%- videos[i]['media:group']['media:title'] %></media:title>
-        <media:content
-          url="<%- videos[i]['media:group']['media:content'].$.url %>"
-          type="<%- videos[i]['media:group']['media:content'].$.type %>"
-          width="<%- videos[i]['media:group']['media:content'].$.width %>"
-          height="<%- videos[i]['media:group']['media:content'].$.height %>"/>
-        <media:thumbnail
-          url="<%- videos[i]['media:group']['media:thumbnail'].$.url %>"
-          width="<%- videos[i]['media:group']['media:thumbnail'].$.width %>"
-          height="<%- videos[i]['media:group']['media:thumbnail'].$.height %>"/>
-        <media:description><%- videos[i]['media:group']['media:description'] %></media:description>
-        <media:community>
-          <media:starRating
-            count="<%- videos[i]['media:group']['media:community']['media:starRating'].$.count %>"
-            average="<%- videos[i]['media:group']['media:community']['media:starRating'].$.average %>"
-            min="<%- videos[i]['media:group']['media:community']['media:starRating'].$.min %>"
-            max="<%- videos[i]['media:group']['media:community']['media:starRating'].$.max %>"/>
-          <media:statistics views="<%- videos[i]['media:group']['media:community']['media:statistics'].$.views %>"/>
-        </media:community>
-      </media:group>
-    </entry>
-    <% } %>
+    <published><%- videos[i].published %></published>
+    <updated><%- videos[i].updated %></updated>
+    <media:group>
+      <media:title><%= videos[i]['media:group']['media:title'] %></media:title>
+      <media:content
+        url="<%- videos[i]['media:group']['media:content'].$.url %>"
+        type="<%- videos[i]['media:group']['media:content'].$.type %>"
+        width="<%- videos[i]['media:group']['media:content'].$.width %>"
+        height="<%- videos[i]['media:group']['media:content'].$.height %>"/>
+      <media:thumbnail
+        url="<%- videos[i]['media:group']['media:thumbnail'].$.url %>"
+        width="<%- videos[i]['media:group']['media:thumbnail'].$.width %>"
+        height="<%- videos[i]['media:group']['media:thumbnail'].$.height %>"/>
+      <media:description><%= videos[i]['media:group']['media:description'] %></media:description>
+      <media:community>
+        <media:starRating
+          count="<%- videos[i]['media:group']['media:community']['media:starRating'].$.count %>"
+          average="<%- videos[i]['media:group']['media:community']['media:starRating'].$.average %>"
+          min="<%- videos[i]['media:group']['media:community']['media:starRating'].$.min %>"
+          max="<%- videos[i]['media:group']['media:community']['media:starRating'].$.max %>"/>
+        <media:statistics views="<%- videos[i]['media:group']['media:community']['media:statistics'].$.views %>"/>
+      </media:community>
+    </media:group>
+  </entry>
+  <% } %>
 </feed>

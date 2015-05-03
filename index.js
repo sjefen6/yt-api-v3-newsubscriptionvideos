@@ -62,11 +62,27 @@ app.get('/', function (req, res) {
   res.render('index');
 });
 
+app.post('/', function (req, res) {
+  //res.redirect('/search/' + req.params.phrase);
+  res.send(JSON.stringify(req.params) +
+  JSON.stringify(req.body) +
+  JSON.stringify(req.query));
+  //res.render('index');
+});
+
 app.get('/search/:phrase', function (req, res) {
+  console.log("Incoming!");
   getAllSubscriptions(req.params.phrase, function(videos) {
     console.log(videos.length);
     videos.sort(function(a, b){return b.published.localeCompare(a.published);})
     videos = videos.slice(0, config.app.videosinresponse);
+
+    for (i = 0; i < videos.length; i++) {
+      videos[i]['media:group']['media:description'] =
+        '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
+        '?autoplay=0&origin=http://feedfix.gbt.cc" frameborder="0" allowfullscreen></iframe><br>' +
+        videos[i]['media:group']['media:description'].split("\n").join("<br>");;
+    }
 
     res.set('Content-Type', 'text/xml');
 		res.render('atom', { videos: videos });

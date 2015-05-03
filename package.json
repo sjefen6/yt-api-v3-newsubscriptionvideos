@@ -11,10 +11,11 @@
   "author": "Vegard Langaas <code@sjefen6.no>",
   "license": "GPL V3",
   "dependencies": {
-    "express": "~4.12.2",
+    "body-parser": "^1.12.3",
     "ejs": "~2.3.1",
+    "express": "~4.12.2",
     "request": "~2.55.0",
-    "youtube-api": "~0.3.2",
-    "xml2js": "~0.4.8"
+    "xml2js": "~0.4.8",
+    "youtube-api": "~0.3.2"
   }
 }
