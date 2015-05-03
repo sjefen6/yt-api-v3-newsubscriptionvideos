@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+>
+<channel>
+	<title>New Subscriptionvideos</title>
+	<description>New videos from the channels you've subscribed to</description>
+	<link>https://www.youtube.com/channel/<%- channelid %></link>
+	<atom:link href="http://<%- config.app.host + ":" + config.app.port %>/feed/<%- channelid %>" rel="self" type="application/rss+xml" />
+	<% for (var i = 0, len = videos.length; i < len; i++) { %>
+	<item>
+		<title><%= videos[i].title %></title>
+		<guid><%- videos[i].link.$.href %></guid>
+		<link><%- videos[i].link.$.href %></link>
+		<description><%= videos[i]['media:group']['media:description'] %></description>
+		<pubDate><%- (new Date(videos[i].published)).toUTCString() %></pubDate>
+	</item>
+	<% } %>
+</channel>
+</rss>

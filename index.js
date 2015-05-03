@@ -1,16 +1,27 @@
 var config = require("./config");
-var express = require('express');
 var request = require('request');
+// youtube-api
 var youtube = require('youtube-api');
 youtube.authenticate({
   type: "key",
   key: config.youtube.apikey
 });
+// xml2js
 var xml2js = require('xml2js');
 var parseString = new xml2js.Parser({
   explicitArray: false
 }).parseString;
+// express
+var express = require('express');
 var app = express();
+app.set('views', './views');
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
+// body-parser
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 function getAllSubscriptions(channel, cb, pagetoken, context) {
   youtube.subscriptions.list({
@@ -44,6 +55,8 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
 
           context.done++;
           if (context.done === context.total) {
+            context.videos.sort(function(a, b){return b.published.localeCompare(a.published);})
+            context.videos = context.videos.slice(0, config.app.videosinresponse);
             cb(context.videos);
           }
         });
@@ -51,43 +64,34 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
   });
 }
 
-// Views path
-app.set('views', './views');
-// Set template-engine to ejs
-app.set('view engine', 'ejs');
-// Initiate html engine
-app.engine('html', require('ejs').renderFile);
-
 app.get('/', function (req, res) {
   res.render('index');
 });
 
 app.post('/', function (req, res) {
-  //res.redirect('/search/' + req.params.phrase);
-  res.send(JSON.stringify(req.params) +
-  JSON.stringify(req.body) +
-  JSON.stringify(req.query));
-  //res.render('index');
+  res.redirect('/feed/' + req.body.channelid);
 });
 
-app.get('/search/:phrase', function (req, res) {
-  console.log("Incoming!");
-  getAllSubscriptions(req.params.phrase, function(videos) {
-    console.log(videos.length);
-    videos.sort(function(a, b){return b.published.localeCompare(a.published);})
-    videos = videos.slice(0, config.app.videosinresponse);
-
+app.get('/feed/:channelid', function (req, res) {
+  getAllSubscriptions(req.params.channelid, function(videos) {
     for (i = 0; i < videos.length; i++) {
       videos[i]['media:group']['media:description'] =
         '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
-        '?autoplay=0&origin=http://feedfix.gbt.cc" frameborder="0" allowfullscreen></iframe><br>' +
-        videos[i]['media:group']['media:description'].split("\n").join("<br>");;
+        '?autoplay=0" frameborder="0" allowfullscreen></iframe><br>' +
+        videos[i]['media:group']['media:description'].split("\n").join("<br>");
     }
+    res.set('Content-Type', 'text/xml');
+    // Fuckit, KISS! I just need a feed
+		res.render('rss', { config: config, videos: videos, channelid: req.params.channelid });
+  });
 
+});
+
+app.get('/api/:channelid', function (req, res) {
+  getAllSubscriptions(req.params.channelid, function(videos) {
     res.set('Content-Type', 'text/xml');
 		res.render('atom', { videos: videos });
   });
-
 });
 
 app.use(function(req, res) {
@@ -95,10 +99,8 @@ app.use(function(req, res) {
 });
 
 var server = app.listen(3000, function () {
-
   var host = server.address().address;
   var port = server.address().port;
 
-  console.log('Example app listening at http://%s:%s', host, port);
-
+  console.log('yt-api-v3-newsubscriptionvideos listening at http://%s:%s', host, port);
 });
