@@ -46,20 +46,20 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
 
     data.items.forEach(function(entry) {
       request("https://www.youtube.com/feeds/videos.xml?channel_id=" + entry.snippet.resourceId.channelId,
-        function (error, response, body) {
-          if (!error && response.statusCode == 200) {
-            parseString(body, function (err, result) {
-              context.videos.push.apply(context.videos, result.feed.entry);
-            });
-          }
+      function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+          parseString(body, function (err, result) {
+            context.videos.push.apply(context.videos, result.feed.entry);
+          });
+        }
 
-          context.done++;
-          if (context.done === context.total) {
-            context.videos.sort(function(a, b){return b.published.localeCompare(a.published);})
-            context.videos = context.videos.slice(0, config.app.videosinresponse);
-            cb(context.videos);
-          }
-        });
+        context.done++;
+        if (context.done === context.total) {
+          context.videos.sort(function(a, b){return b.published.localeCompare(a.published);})
+          context.videos = context.videos.slice(0, config.app.videosinresponse);
+          cb(context.videos);
+        }
+      });
     });
   });
 }
@@ -76,13 +76,13 @@ app.get('/feed/:channelid', function (req, res) {
   getAllSubscriptions(req.params.channelid, function(videos) {
     for (i = 0; i < videos.length; i++) {
       videos[i]['media:group']['media:description'] =
-        '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
-        '?autoplay=0" frameborder="0" allowfullscreen></iframe><br>' +
-        videos[i]['media:group']['media:description'].split("\n").join("<br>");
+      '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
+      '?autoplay=0" frameborder="0" allowfullscreen></iframe><br>' +
+      videos[i]['media:group']['media:description'].split("\n").join("<br>");
     }
     res.set('Content-Type', 'text/xml');
     // Fuckit, KISS! I just need a feed
-		res.render('rss', { config: config, videos: videos, channelid: req.params.channelid });
+    res.render('rss', { config: config, videos: videos, channelid: req.params.channelid });
   });
 
 });
@@ -90,12 +90,12 @@ app.get('/feed/:channelid', function (req, res) {
 app.get('/api/:channelid', function (req, res) {
   getAllSubscriptions(req.params.channelid, function(videos) {
     res.set('Content-Type', 'text/xml');
-		res.render('atom', { videos: videos });
+    res.render('atom', { videos: videos });
   });
 });
 
 app.use(function(req, res) {
-    res.status(404).send('Not found');
+  res.status(404).send('Not found');
 });
 
 var server = app.listen(3000, function () {
