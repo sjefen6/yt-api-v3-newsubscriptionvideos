@@ -30,6 +30,10 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
     maxResults: 50,
     pageToken: pagetoken
   }, function (err, data) {
+    if(err != null){
+      cb(err, null);
+    }
+
     if (context === undefined) {
       context = {
         videos: [],
@@ -57,7 +61,7 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
         if (context.done === context.total) {
           context.videos.sort(function(a, b){return b.published.localeCompare(a.published);})
           context.videos = context.videos.slice(0, config.app.videosinresponse);
-          cb(context.videos);
+          cb(null, context.videos);
         }
       });
     });
@@ -73,16 +77,20 @@ app.post('/', function (req, res) {
 });
 
 app.get('/feed/:channelid', function (req, res) {
-  getAllSubscriptions(req.params.channelid, function(videos) {
-    for (i = 0; i < videos.length; i++) {
-      videos[i]['media:group']['media:description'] =
-      '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
-      '?autoplay=0" frameborder="0" allowfullscreen></iframe><br>' +
-      videos[i]['media:group']['media:description'].split("\n").join("<br>");
+  getAllSubscriptions(req.params.channelid, function(err, videos) {
+    if (err != null){
+      res.status(500).send('Error\n' + JSON.stringify(err)).end();
+    } else {
+      for (i = 0; i < videos.length; i++) {
+        videos[i]['media:group']['media:description'] =
+        '<iframe width="650" height="390" src="https://www.youtube.com/embed/' + videos[i]['yt:videoId'] +
+        '?autoplay=0" frameborder="0" allowfullscreen></iframe><br>' +
+        videos[i]['media:group']['media:description'].split("\n").join("<br>");
+      }
+      res.set('Content-Type', 'text/xml');
+      // Fuckit, KISS! I just need a feed
+      res.render('rss', { config: config, videos: videos, channelid: req.params.channelid });
     }
-    res.set('Content-Type', 'text/xml');
-    // Fuckit, KISS! I just need a feed
-    res.render('rss', { config: config, videos: videos, channelid: req.params.channelid });
   });
 
 });
