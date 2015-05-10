@@ -32,6 +32,7 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
   }, function (err, data) {
     if(err != null){
       cb(err, null);
+      return;
     }
 
     if (context === undefined) {
