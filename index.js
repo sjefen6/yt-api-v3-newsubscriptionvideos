@@ -60,7 +60,7 @@ function getAllSubscriptions(channel, cb, pagetoken, context) {
 
         context.done++;
         if (context.done === context.total) {
-          context.videos.sort(function(a, b){return b.published.localeCompare(a.published);})
+          context.videos.sort(function(a, b){return b.updated.localeCompare(a.updated);})
           context.videos = context.videos.slice(0, config.app.videosinresponse);
           cb(null, context.videos);
         }
